@@ -5,29 +5,14 @@ import os
 import re
 
 from ap_common.filesystem import delete_empty_directories
-from ap_common.utils import replace_env_vars
+from ap_common.utils import resolve_path
 
 logger = logging.getLogger(__name__)
 
 
-def resolve_path(path: str) -> str:
-    """
-    Resolve a path by expanding environment variables and user home directory.
-
-    Args:
-        path: Path to resolve
-
-    Returns:
-        Resolved absolute path
-    """
-    path = replace_env_vars(path)
-    path = os.path.expanduser(path)
-    path = os.path.abspath(path)
-    return path
-
-
 def _delete_files_in_dir(
     directory: str,
+    *,
     dryrun: bool = False,
     exclude_pattern: re.Pattern | None = None,
 ) -> list[str]:
@@ -65,6 +50,7 @@ def _delete_files_in_dir(
 
 def delete_files_in_directory(
     directory: str,
+    *,
     recursive: bool = False,
     dryrun: bool = False,
     exclude_regex: str | None = None,
@@ -82,10 +68,11 @@ def delete_files_in_directory(
     Returns:
         List of files that failed to delete (empty if all succeeded)
     """
-    directory = resolve_path(directory)
+    resolved_directory = resolve_path(directory)
 
-    if not os.path.isdir(directory):
+    if resolved_directory is None or not os.path.isdir(resolved_directory):
         raise ValueError(f"Not a directory: {directory}")
+    directory = resolved_directory
 
     # Compile the exclude regex pattern if provided
     exclude_pattern = None
@@ -122,6 +109,7 @@ def delete_files_in_directory(
 
 def empty_directory(
     directory: str,
+    *,
     recursive: bool = False,
     dryrun: bool = False,
     exclude_regex: str | None = None,

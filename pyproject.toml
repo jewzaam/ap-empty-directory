@@ -34,7 +34,9 @@ dev = [
     "pytest-mock>=3.0",
     "black>=23.0",
     "flake8>=6.0",
-    "mypy==1.11.2",
+    "mypy>=1.11",
+    "xenon>=0.9",
+    "mutmut>=2.0,<3.0",
 ]
 
 [project.scripts]
@@ -48,6 +50,10 @@ include = ["ap_empty_directory*"]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
 
 [tool.mypy]
 ignore_missing_imports = true
